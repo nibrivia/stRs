@@ -34,32 +34,110 @@ ui <- fluidPage(
 
 planets <- tribble(
     ~name, ~ra, ~dec, ~mag,
-    "sun",  21.9,  -12, -26,
-    "moon", 15.8,  -16, -10,
-    "camb",  8.0,   42.3, 0
+    "sun",  22,  -12, -26,
+    "moon", 16.5,  -19, -10
 )
 
+hms_to_dec <- function(h, m, s) {
+    h + m/60 + s/60/60
+}
+
+h_to_deg <- function(h) {
+    h/24*360
+}
+
+deg_to_h <- function(d) {
+    d/360*24
+}
+
+visible_line <- function(lat, ha) {
+    function(ra_deg, dec) {
+        ra <- deg_to_h(ra_deg)
+        #(lat%%180-90) * cos((ra-ha)/24*2*pi)
+        phi <- (ra-ha)/24*2*pi
+        
+        90* sin(phi)/sqrt(lat^2 + sin(phi)^2)
+    }
+}
+
+is_visible <- function(lat, ha) {
+    local_visible_line <- visible_line(lat, ha)
+    function(ra_deg, dec) {
+        if (lat > 0) {
+            local_visible_line(ra_deg, dec) < dec
+        } else {
+            local_visible_line(ra_deg, dec) > dec
+        }
+    }
+}
+
 plot_stars <- function() {
+    lat <- 42.3736
+    ha  <- .5
+    cambridge_visible <- is_visible(lat, ha)
     stars %>%
         top_n(3000, -mag) %>%
         filter(mag > -20) %>%
-        ggplot(aes(x = ra,
+        ggplot(aes(x = h_to_deg(ra),
                    y = dec,
-                   color = -42.3*cos((ra-8)/24*2*pi) < dec, #((dec - (42.3))^2+(360*(ra-8)/24)^2) < 90 | dec > 90-42.3,
+                   #color = cambridge_visible(ra, dec),
                    alpha = -mag)) +
-        geom_point(size = 3) +
+        geom_point(size = .3) +
+        # SUN
+        stat_function(fun = visible_line(-12, 21.9),
+                      geom = "point",
+                      n = 1000,
+                      size = .5,
+                      color = "orange") +
+        # VIEWER
+        stat_function(fun = visible_line(lat, ha),
+                      geom = "point",
+                      size = .5,
+                      n = 1000,
+                      color = "black") +
+        # ALWAYS
+        stat_function(fun = ~(lat%%180-90),
+                      geom = "point",
+                      size = .1,
+                      n = 1000,
+                      color = "blue") +
+        # EQUATOR
+        stat_function(fun = ~0,
+                      geom = "point",
+                      size = .1,
+                      n = 1000,
+                      color = "red") +
+        # NEVER
+        stat_function(fun = ~(90-lat)%%180,
+                      geom = "point",
+                      size = .1,
+                      n = 1000,
+                      color = "blue") +
+        #geom_hline(yintercept = c(lat%%180-90, 0, 90-lat%%180),
+        #           linetype   = c("dotted", "solid", "dotted")) +
         annotate("point",
-                 x = planets$ra,
+                 x = c(0, h_to_deg(ha), 0),
+                 y = c(90, lat, -90),
+                 size = 3,
+                 shape = c("N", "X", "S"),
+                 color = "red") +
+        annotate("point",
+                 x = h_to_deg(planets$ra),
                  y = planets$dec,
                  size = 3,
-                 shape = c("S", "M", "C"),
-                 color = "yellow") +
+                 shape = c("O", "M"),
+                 color = "red") +
+        coord_map(projection = "rectangular",
+                  lat0 = lat
+                  #orientation=c(lat, -h_to_deg(ha), 0)
+                  ) +
         scale_x_reverse() +
         theme(# plot.background = element_rect(fill = "black"),
-            panel.background = element_rect(fill = "black"),
-            panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank(),
-            axis.text        = element_blank()) +
+            panel.background = element_rect(fill = "white"),
+            #panel.grid.major = element_blank(),
+            #panel.grid.minor = element_blank(),
+            axis.text        = element_blank(),
+            axis.ticks       = element_blank()) +
         guides(alpha=F, color = F) +
         labs(x = NULL, y = NULL)
 }
