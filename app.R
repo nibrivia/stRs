@@ -50,13 +50,24 @@ deg_to_h <- function(d) {
     d/360*24
 }
 
+rad_to_deg <-function(d) {
+    d/2/pi*360
+}
+
+deg_to_rad <-function(d) {
+    d/360*2*pi
+}
+
 visible_line <- function(lat, ha) {
-    function(ra_deg, dec) {
-        ra <- deg_to_h(ra_deg)
-        #(lat%%180-90) * cos((ra-ha)/24*2*pi)
-        phi <- (ra-ha)/24*2*pi
-        
-        90* sin(phi)/sqrt(lat^2 + sin(phi)^2)
+    ha_rad  <- ha  %>% h_to_deg %>% deg_to_rad
+    lat_rad <- lat %>% deg_to_rad
+    a <- cos(ha_rad) * cos(lat_rad)
+    b <- sin(ha_rad) * cos(lat_rad)
+    c <-               sin(lat_rad)
+    
+    function(ra_deg) {
+        ra <- ra_deg %>% deg_to_rad
+        atan2(a*cos(ra)+b*sin(ra), c) %>% rad_to_deg
     }
 }
 
@@ -64,9 +75,9 @@ is_visible <- function(lat, ha) {
     local_visible_line <- visible_line(lat, ha)
     function(ra_deg, dec) {
         if (lat > 0) {
-            local_visible_line(ra_deg, dec) < dec
+            local_visible_line(ra_deg) < dec
         } else {
-            local_visible_line(ra_deg, dec) > dec
+            local_visible_line(ra_deg) > dec
         }
     }
 }
