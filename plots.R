@@ -67,7 +67,8 @@ plot_stars <- function(lat = 42.3736, ha, globe = TRUE) {
                  color = "white",
                  ) +
         scale_x_reverse() +
-        theme( plot.background = element_rect(fill = "black"),
+        theme(plot.background = element_rect(fill = "black"),
+            strip.background = element_rect(fill = "black"),
             panel.background = element_rect(fill = "black"),
             panel.grid.major = element_blank(),
             panel.grid.minor = element_blank(),
