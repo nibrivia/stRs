@@ -21,14 +21,14 @@ server <- function(input, output) {
     })
 
     output$plot_all <- renderPlot({
-        plot_stars(lat = input$lat, ha = 0, globe = FALSE)
+        plot_stars(lat = input$lat, ha = ha(), globe = FALSE)
     })
     
     output$plot_up <- renderPlot({
-        plot_stars(lat = input$lat, ha = 0)
+        plot_stars(lat = input$lat, ha = ha())
     })
     
     output$plot_down <- renderPlot({
-        plot_stars(lat = -input$lat, ha = 12)
+        plot_stars(lat = -input$lat, ha = ha()+12)
     })
 }
