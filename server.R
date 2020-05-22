@@ -9,7 +9,7 @@ source("plots.R")
 server <- function(input, output) {
     
     output$planets <- DT::renderDataTable({
-        planets() %>% 
+        objects() %>% 
             select(name, ra, dec)
         }, 
         options = list(pageLength = 15, dom = "ftp"),
