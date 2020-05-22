@@ -7,14 +7,12 @@ rlang::env_binding_unlock(baseenv(), "browser")
 browser <<- list
 
 date_to_vec <- function(date) {
-    n <- now(tz = "UTC")
-    c(year(n), month(n), day(n), hour(n), minute(n), second(n)) 
+    c(year(date), month(date), day(date), hour(date), minute(date)) 
 }
 
 date_to_jd <- function(date) {
-    date %>% 
-        date_to_vec() %>% 
-        juldate()
+    jdcnv(year(date), month(date), day(date),
+          hour(date) + minute(date)/60 + second(date)/3600)
 }
 
 planets <- function(date = now()) {
