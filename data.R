@@ -51,10 +51,10 @@ objects <- function(date = now(tz="UTC")) {
     planets <- planets(date)
     sun  <-  sun_trace(date)
     moon <- moon_trace(date)
-    people <- people %>% 
+    people <- earth_objects %>% 
         mutate(dec = lat,
                ra  = h_to_deg(ct2lst(long, "", date_to_jd(date)))) %>% 
         select(name, ra, dec)
     
-    bind_rows(sun, moon, planets, people, earth_objects)
+    bind_rows(sun, moon, planets, people)
 }
