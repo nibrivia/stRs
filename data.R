@@ -15,7 +15,7 @@ date_to_jd <- function(date) {
           hour(date) + minute(date)/60 + second(date)/3600)
 }
 
-planets <- function(date = now()) {
+planets <- function(date) {
     visible_planets <- c("Mercury", "Venus", "Mars",
                         "Jupiter", "Saturn")
     
@@ -27,16 +27,34 @@ planets <- function(date = now()) {
                dec = as.numeric(dec))
 }
 
-objects <- function(date = now()) {
-    planets <- planets(date)
-    sun <- sunpos(date_to_jd(date)) %>% 
+
+moon_trace <- function(date) {
+    moon <- moonpos(date_to_jd(date + hours((-1:4)*6))) %>% 
         as_tibble() %>% 
-        mutate(name = "Sun") %>% 
+        mutate(name = "") %>% 
         select(name, ra, dec)
-    moon <- moonpos(date_to_jd(date)) %>% 
+    moon[2, "name"] <- "Moon"
+    return(moon)
+}
+
+sun_trace <- function(date) {
+    sun <- sunpos(date_to_jd(date + days(-1:7))) %>% 
         as_tibble() %>% 
-        mutate(name = "Moon") %>% 
+        mutate(name = "") %>% 
+        select(name, ra, dec)
+    sun[2, "name"] <- "Sun"
+    return(sun)
+}
+
+objects <- function(date = now(tz="UTC")) {
+    earth_objects <- read_csv("objects.csv")
+    planets <- planets(date)
+    sun  <-  sun_trace(date)
+    moon <- moon_trace(date)
+    people <- people %>% 
+        mutate(dec = lat,
+               ra  = h_to_deg(ct2lst(long, "", date_to_jd(date)))) %>% 
         select(name, ra, dec)
     
-    bind_rows(sun, moon, planets)
+    bind_rows(sun, moon, planets, people, earth_objects)
 }
