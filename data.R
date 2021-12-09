@@ -7,10 +7,12 @@ rlang::env_binding_unlock(baseenv(), "browser")
 browser <<- list
 
 date_to_vec <- function(date) {
+    date <- with_tz(date, tzone = "UTC")
     c(year(date), month(date), day(date), hour(date), minute(date)) 
 }
 
 date_to_jd <- function(date) {
+    date <- with_tz(date, tzone = "UTC")
     jdcnv(year(date), month(date), day(date),
           hour(date) + minute(date)/60 + second(date)/3600)
 }
@@ -43,10 +45,14 @@ sun_trace <- function(date) {
         mutate(name = "") %>% 
         select(name, ra, dec)
     sun[2, "name"] <- "Sun"
+    
+    #sun_ra  <- sun[2, "ra"]
+    #sun_dec <- sun[2, "dec"]
+    #anti_solar["ra"] <- -anti_solar["ra"]
     return(sun)
 }
 
-objects <- function(date = now(tz="UTC")) {
+objects <- function(date = now()) {
     earth_objects <- read_csv("objects.csv")
     planets <- planets(date)
     sun  <-  sun_trace(date)
@@ -56,5 +62,7 @@ objects <- function(date = now(tz="UTC")) {
                ra  = h_to_deg(ct2lst(long, "", date_to_jd(date)))) %>% 
         select(name, ra, dec)
     
-    bind_rows(sun, moon, planets, people)
+    milky_way <- tibble(name = "Milky Way", dec = -29.00781, ra = h_to_deg(17.761122))
+    
+    bind_rows(sun, moon, planets, people, milky_way)
 }

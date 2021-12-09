@@ -30,18 +30,19 @@ plot_stars <- function(lat = 42.3736, ha, globe = TRUE) {
         stat_function(fun = ~(earth_tilt),
                       geom = "line", alpha = 0.2,
                       n = 72*2, color = "red") +
-        stat_function(fun = visible_line(sun_dec, sun_ra %>% deg_to_h()),
-                      geom = "line",
-                      n = 72*5,
-                      size = .3,
-                      color = "orange") +
+        geom_line(data = visible_line(sun_dec, sun_ra %>% deg_to_h()),
+                  inherit.aes = FALSE,
+                  aes(x = long,
+                      y = lat),
+                  size = .3,
+                  color = "orange") +
         
         #Ecliptic
-        stat_function(fun = visible_line(90-earth_tilt, -90 %>% deg_to_h()),
-                      geom = "line",
-                      size = 0.1,
-                      n = 72*50,
-                      color = "cyan") +
+        geom_line(data = visible_line(90-earth_tilt, -90 %>% deg_to_h()),
+                  inherit.aes = FALSE,
+                  aes(x = long, y = lat),
+                  size = 0.1,
+                  color = "cyan") +
         # ALWAYS
         stat_function(fun = ~((lat-180)%%180-90),
                       geom = "line",
@@ -63,15 +64,27 @@ plot_stars <- function(lat = 42.3736, ha, globe = TRUE) {
                       linetype = "dashed",
                       color = "blue") +
         # VIEWER
-        stat_function(fun = visible_line(0.001, ha+90),
-                      geom = "line", alpha = 0.15, n = 72*50,
-                      color = "green") +
-        stat_function(fun = visible_line(lat+90, ha),
-                      geom = "line", alpha = 0.15, n = 72*50,
-                      color = "green") +
-        stat_function(fun = visible_line(lat, ha),
-                      geom = "line", size = 0.1, n = 72*5,
-                      color = "white") +
+        geom_point(data = circle_df(lat, ha, pi/4),
+                  inherit.aes = FALSE,
+                  aes(x = long, y = lat),
+                  size = .1, alpha = 0.15,
+                  color = "green") +
+        geom_point(data = visible_line(0, ha+90),
+                  inherit.aes = FALSE,
+                  aes(x = long, y = lat),
+                  size = .1, alpha = 0.15,
+                  color = "green") +
+        geom_point(data = visible_line(lat+90, ha),
+                  inherit.aes = FALSE,
+                  aes(x = long, y = lat),
+                  size = .1,
+                  alpha = 0.15,
+                  color = "green") +
+        geom_line(data = visible_line(lat, ha),
+                  inherit.aes = FALSE,
+                  aes(x = long, y = lat),
+                  size = 0.1,
+                  color = "white") +
         #geom_hline(yintercept = c(lat%%180-90, 0, 90-lat%%180),
         #           linetype   = c("dotted", "solid", "dotted")) +
         annotate("text",
@@ -89,8 +102,8 @@ plot_stars <- function(lat = 42.3736, ha, globe = TRUE) {
         annotate("text",
                  x = (h_to_deg(ha) + c(180, 90, 0, -90)) %% 360,
                  y = c(90-lat, 0, lat-90, 0),
-                 vjust = c("inward", "", "inward", ""),
-                 hjust = c("", "inward", "", "inward"),
+                 #vjust = c("inward", "", "inward", ""),
+                 #hjust = c("", "inward", "", "inward"),
                  size = 4,
                  label = c("N", "E", "S", "W"),
                  color = "green") +
@@ -116,20 +129,22 @@ plot_stars <- function(lat = 42.3736, ha, globe = TRUE) {
                  color = "white",
                  ) +
         scale_x_reverse() +
-        theme(plot.background = element_rect(fill = "black"),
-            strip.background = element_rect(fill = "black"),
-            panel.background = element_rect(fill = "black"),
-            panel.grid.major = element_blank(),
-            panel.grid.minor = element_blank(),
-            axis.text        = element_blank(),
-            axis.ticks       = element_blank()) +
+        theme(plot.background  = element_rect(fill = "black", color = NA),
+              plot.margin      = margin(0,0,0,0),
+              strip.background = element_rect(fill = "black", color = NA),
+              panel.background = element_rect(fill = "black", color = NA),
+              panel.border     = element_blank(),
+              panel.grid.major = element_blank(),
+              panel.grid.minor = element_blank(),
+              axis.text        = element_blank(),
+              axis.ticks       = element_blank()) +
         guides(alpha=F, color = F) +
         labs(x = NULL, y = NULL)
     
     if (globe) {
         plot <- plot + coord_map(projection = "orthographic", orientation=c(lat, -h_to_deg(ha), 0))
     } else {
-        plot <- plot + coord_map(projection = "rectangular",  lat0 = lat)
+        plot <- plot + coord_map(projection = "rectangular",  lat0 = 0, orientation = c(90, 0, 0))
     }
     
     plot
