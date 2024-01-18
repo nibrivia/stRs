@@ -53,7 +53,10 @@ sun_trace <- function(date) {
 }
 
 objects <- function(date = now()) {
-    earth_objects <- read_csv("objects.csv")
+    earth_objects <- tibble()
+    if(file.exists("objects.csv")) {
+        earth_objects <- read_csv("objects.csv")
+    }
     planets <- planets(date)
     sun  <-  sun_trace(date)
     moon <- moon_trace(date)
@@ -67,3 +70,4 @@ objects <- function(date = now()) {
     bind_rows(sun, moon, planets, people, milky_way)
     # bind_rows(people, milky_way)
 }
+
