@@ -32,7 +32,7 @@ xyz_to_latlong <- function(x, y, z) {
     c(lat, long)
 }
 
-latlong_to_xyz <- function(lat, long) {
+latlong_to_xyz <- function(lat = 0, long = 0) {
     x <- cos(long) * cos(lat)
     y <- sin(long) * cos(lat)
     z <-             sin(lat)
@@ -41,9 +41,9 @@ latlong_to_xyz <- function(lat, long) {
 }
 
 perp_to_latlong <- function(lat, long, theta = 0) {
-   perp_0 <- c((lat + pi/2) %% (2*pi), long)
-   
-   rot_xyz(latlong_to_xyz(perp_0[1], perp_0[2]), latlong_to_xyz(lat, long), theta) 
+    perp_0 <- c((lat + pi/2) %% (2*pi), long)
+    
+    rot_xyz(latlong_to_xyz(perp_0[1], perp_0[2]), latlong_to_xyz(lat, long), theta) 
 }
 
 # https://en.wikipedia.org/wiki/Rotation_matrix#Rotation_matrix_from_axis_and_angle
@@ -111,7 +111,8 @@ visible_line <- function(lat, ha) {
     
     thetas <- seq(from = 0, to = 2*pi, length.out = 1000)
     thetas %>%
-        map(rot_fn) %>% transpose() %>%
+        map(rot_fn) %>%
+        transpose() %>%
         `names<-`(c("lat", "long")) %>%
         as_tibble() %>%
         mutate(lat = as.numeric(lat) %>% rad_to_lat(),

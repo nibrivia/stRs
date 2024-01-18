@@ -1,4 +1,4 @@
-library(astrolibR)
+# library(astrolibR)
 library(lubridate)
 
 stars <- read_csv("data/hygdata_v3.csv")
@@ -65,4 +65,5 @@ objects <- function(date = now()) {
     milky_way <- tibble(name = "Milky Way", dec = -29.00781, ra = h_to_deg(17.761122))
     
     bind_rows(sun, moon, planets, people, milky_way)
+    # bind_rows(people, milky_way)
 }

@@ -4,7 +4,11 @@ plot_stars <- function(lat = 42.3736, ha, globe = TRUE) {
     cambridge_visible <- is_visible(lat, ha)
     objects <- objects()
     sun_ra  <- objects %>% filter(name == "Sun") %>% .[["ra"]]
+    # sun_ra <- 0.1
+    print("sun_ra")
+    print(sun_ra)
     sun_dec <- objects %>% filter(name == "Sun") %>% .[["dec"]]
+    # sun_dec <- 0.1
     
     plot <- stars %>%
         filter(mag > -20) %>%
@@ -64,11 +68,11 @@ plot_stars <- function(lat = 42.3736, ha, globe = TRUE) {
                       linetype = "dashed",
                       color = "blue") +
         # VIEWER
-        geom_point(data = circle_df(lat, ha, pi/4),
-                  inherit.aes = FALSE,
-                  aes(x = long, y = lat),
-                  size = .1, alpha = 0.15,
-                  color = "green") +
+        # geom_point(data = circle_df(lat, ha, pi/4),
+        #           inherit.aes = FALSE,
+        #           aes(x = long, y = lat),
+        #           size = .1, alpha = 0.15,
+        #           color = "green") +
         geom_point(data = visible_line(0, ha+90),
                   inherit.aes = FALSE,
                   aes(x = long, y = lat),
