@@ -53,16 +53,16 @@ sun_trace <- function(date) {
 }
 
 objects <- function(date = now()) {
-    earth_objects <- tibble()
+    earth_objects <- tibble(name = "0", lat = 0, long = 0)
     if(file.exists("objects.csv")) {
         earth_objects <- read_csv("objects.csv")
     }
     planets <- planets(date)
     sun  <-  sun_trace(date)
     moon <- moon_trace(date)
-    people <- earth_objects %>% 
+    people <- earth_objects %>%
         mutate(dec = lat,
-               ra  = h_to_deg(ct2lst(long, "", date_to_jd(date)))) %>% 
+               ra  = h_to_deg(ct2lst(long, "", date_to_jd(date)))) %>%
         select(name, ra, dec)
     
     milky_way <- tibble(name = "Milky Way", dec = -29.00781, ra = h_to_deg(17.761122))

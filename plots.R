@@ -4,11 +4,7 @@ plot_stars <- function(lat = 42.3736, ha, globe = TRUE) {
     cambridge_visible <- is_visible(lat, ha)
     objects <- objects()
     sun_ra  <- objects %>% filter(name == "Sun") %>% .[["ra"]]
-    # sun_ra <- 0.1
-    print("sun_ra")
-    print(sun_ra)
     sun_dec <- objects %>% filter(name == "Sun") %>% .[["dec"]]
-    # sun_dec <- 0.1
     
     plot <- stars %>%
         filter(mag > -20) %>%

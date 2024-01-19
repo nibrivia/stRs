@@ -1,4 +1,5 @@
 library(tidyverse)
+library(mapproj)
 library(shiny)
 library(astrolibR)
 source("data.R")

@@ -108,10 +108,10 @@ visible_line <- function(lat, ha) {
     lat_rad <- lat %>% deg_to_rad
     
     rot_fn <- circle_at(lat_rad, ha_rad, pi/2)
-    
+
     thetas <- seq(from = 0, to = 2*pi, length.out = 1000)
     thetas %>%
-        map(rot_fn) %>%
+        purrr::map(rot_fn) %>% 
         transpose() %>%
         `names<-`(c("lat", "long")) %>%
         as_tibble() %>%
