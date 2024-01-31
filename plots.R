@@ -129,17 +129,12 @@ plot_stars <- function(lat = 42.3736, ha, globe = TRUE) {
                  color = "white",
                  ) +
         scale_x_reverse() +
-        theme(plot.background  = element_rect(fill = "black", color = NA),
-              plot.margin      = margin(0,0,0,0),
-              strip.background = element_rect(fill = "black", color = NA),
-              panel.background = element_rect(fill = "black", color = NA),
-              panel.border     = element_blank(),
-              panel.grid.major = element_blank(),
-              panel.grid.minor = element_blank(),
-              axis.text        = element_blank(),
-              axis.ticks       = element_blank()) +
+        theme_void() +
+        theme(panel.background = element_rect(fill = "black", color = NA, linewidth = 0))) +
         guides(alpha=F, color = F) +
-        labs(x = NULL, y = NULL)
+        labs(x = NULL, y = NULL, title = NULL) +
+        scale_x_continuous(expand = c(0,0)) +
+        scale_y_continuous(expand = c(0,0))
     
     if (globe) {
         plot <- plot + coord_map(projection = "orthographic", orientation=c(lat, -h_to_deg(ha), 0))
@@ -149,3 +144,5 @@ plot_stars <- function(lat = 42.3736, ha, globe = TRUE) {
     
     plot
 }
+
+plot_stars(ha = 0, globe = F)
